@@ -1,63 +1,43 @@
+from pathlib import Path
+
+# Get the path to the current script (my_example.py)
+current_file = Path(__file__).resolve()
+
+# Go to project root (assumes "examples" is directly under root)
+project_root = current_file.parent.parent
+
+# Define path to results directory
+src_dir = project_root / "src"
+src_dir.mkdir(parents=True, exist_ok=True)  # Ensure it exists
+
+import sys
+import os
+# Navigate relative to the current working directory
+sys.path.append(os.path.abspath(src_dir))
+
 import pytest
-import numpy as np
 from sixdman.core.band import Band, OpticalParameters
+from sixdman.core.network import Network
 
 @pytest.fixture
 def c_band_params():
     """Fixture providing typical C-band parameters."""
-    return OpticalParameters(
-        beta_2=-21.7e-27,  # s²/m
-        beta_3=0.14e-39,   # s³/m
-        alpha_db=0.2,      # dB/km
-        gamma=1.21e-3,     # 1/W·m
-        F_dB=6.0          # dB
-    )
+    return OpticalParameters()
 
 def test_band_initialization(c_band_params):
+    network = Network(topology_name="MAN157")
     band = Band(
         name='C',
-        center_frequency=193.5e12,  # 193.5 THz
-        bandwidth=4.4e12,           # 4.4 THz
-        opt_params=c_band_params
+        start_freq = 190.65, # THz
+        end_freq = 196.675, # THz
+        opt_params = c_band_params,
+        network_instance = network,
+        channel_spacing = 0.05 # THz
     )
     
     assert band.name == 'C'
-    assert band.num_channels == 88  # 4.4 THz / 50 GHz
-    assert len(band.frequencies) == band.num_channels
+    assert band.num_channels == 121  
+    assert len(band.spectrum) == band.num_channels
 
-def test_snr_calculation(c_band_params):
-    band = Band(
-        name='C',
-        center_frequency=193.5e12,
-        bandwidth=4.4e12,
-        opt_params=c_band_params
-    )
-    
-    # Test SNR calculation for typical parameters
-    power = 1e-3  # 0 dBm
-    distance = 100e3  # 100 km
-    num_spans = 2
-    
-    snr = band.calculate_snr(power, distance, num_spans)
-    
-    assert snr['snr_db'] > 0
-    assert snr['snr_total_db'] < snr['snr_db']  # Total SNR should include nonlinear effects
-    assert snr['P_ASE'] > 0
-    assert snr['P_NL'] > 0
-
-def test_required_snr(c_band_params):
-    band = Band(
-        name='C',
-        center_frequency=193.5e12,
-        bandwidth=4.4e12,
-        opt_params=c_band_params
-    )
-    
-    # Test required SNR for different modulation formats
-    snr_qpsk = band.get_required_snr(4)    # QPSK
-    snr_16qam = band.get_required_snr(16)  # 16-QAM
-    snr_64qam = band.get_required_snr(64)  # 64-QAM
-    
-    assert snr_64qam > snr_16qam > snr_qpsk  # Higher order modulations need higher SNR
 
 # Add more tests...

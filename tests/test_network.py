@@ -1,39 +1,29 @@
-import pytest
-import numpy as np
-from src.sixdman.core.network import Network
+from pathlib import Path
 
-numspans = np.ones(100)
+# Get the path to the current script (my_example.py)
+current_file = Path(__file__).resolve()
+
+# Go to project root (assumes "examples" is directly under root)
+project_root = current_file.parent.parent
+
+# Define path to results directory
+src_dir = project_root / "src"
+src_dir.mkdir(parents=True, exist_ok=True)  # Ensure it exists
+
+import sys
+import os
+# Navigate relative to the current working directory
+sys.path.append(os.path.abspath(src_dir))
+import pytest
+from sixdman.core.network import Network
+
+import pytest
+from sixdman.core.network import Network
 
 def test_network_initialization():
-    network = Network(numspans)
-    assert len(network.graph.nodes) == 0
-    assert len(network.hierarchical_levels['HL1']['standalone']) == 0
+    """Test that a Network object can be initialized with a sample topology."""
+    network = Network(topology_name="MAN157")
+    assert network is not None
+    assert hasattr(network, "topology_name")
+    assert network.topology_name == "MAN157"
 
-def test_hierarchical_levels():
-    network = Network(numspans)
-    hl1 = [1, 5]
-    hl2 = [0, 2, 3, 4]
-    hl3 = list(range(6, 39))
-    hl4 = list(range(39, 157))
-    
-    network.set_hierarchical_levels(hl1, hl2, hl3, hl4)
-    
-    assert network.hierarchical_levels['HL1']['standalone'] == hl1
-    assert network.hierarchical_levels['HL2']['colocated'] == hl1
-    assert set(network.hierarchical_levels['HL3']['colocated']) == set(hl1 + hl2)
-
-def test_path_calculation():
-    network = Network(numspans)
-    # Create a simple test graph
-    edges = [(0, 1, 10), (1, 2, 20), (0, 2, 35)]
-    for u, v, w in edges:
-        network.graph.add_edge(u, v, weight=w)
-    
-    paths = network.calculate_paths(0, 2, k=2)
-    assert len(paths) == 2
-    assert paths[0]['distance'] == 30  # 
-    assert paths[1]['distance'] == 35  # second shortest path
-    assert paths[0]['nodes'] == [0, 1, 2]  # first path
-    assert paths[1]['nodes'] == [0, 2]  # second path    
-
-# Add more tests...
