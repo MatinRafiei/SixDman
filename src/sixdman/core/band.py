@@ -7,53 +7,90 @@ from .network import Network
 
 @dataclass
 class OpticalParameters:
-    """Class for storing optical transmission parameters.
+    """A data class to store and compute fiber and system parameters for optical network modeling.
     
     Attributes:
-        beta_2: Group velocity dispersion (s²/m)
-        beta_3: Third-order dispersion coefficient (s³/m)
-        alpha_db: Attenuation coefficient (dB/km)
-        gamma: Nonlinear parameter (1/W·m)
-        F_dB: Noise figure (dB)
+        Attributes:
+        h_plank (float): Planck's constant (J·s)
+        target_ber (float): Target bit error rate
+        phi_MFL (np.ndarray): Modulation format penalty factors
+        epsilon (int): Auxiliary variable for modeling purposes
+        beta_3 (float): Third-order dispersion coefficient (s^3/m)
+        Cr (float): Chromatic dispersion coefficient (1/(m·Hz²))
+        alpha_db (float): Fiber attenuation (dB/km)
+        beta_2 (float): Second-order dispersion coefficient (s²/m)
+        gamma (float): Nonlinear coefficient (1/(W·m))
+        F_C (float): Noise figure in linear scale for C-band
+        F_L (float): Noise figure in linear scale for L-band
+        Rs_mat (float): Symbol rate (Baud)
+        MFL (np.ndarray): Available modulation format levels
+        rof (float): Roll-off factor
+        alpha_norm (float): Normalized attenuation (1/m)
+        L_eff_a (float): Effective length (m)
+        B_ch_mat (float): Channel bandwidth (Hz)
+        B_ch (float): Channel bandwidth (Hz) [alias]
     """
     
-    h_plank: float = 6.626e-34  # Planck's constant (J s)
-    target_ber: float = 1e-2  # Target bit error rate
+    # Fundamental constants
+    h_plank: float = 6.626e-34
+    target_ber: float = 1e-2 
+
+    # Modulation format penalty factors
     phi_MFL: np.ndarray = field(default_factory=lambda: -1 * np.array([1, 1, 2 / 3, 17 / 25, 69 / 100, 13 / 21]))
 
     # System Parameters
-    epsilon: int = 0  # Auxiliary variable
-    beta_3: float = 0.14e-39  # Third-order dispersion parameter (s^3/m)
-    Cr: float = 0.028 / 1e3 / 1e12  # Chromatic dispersion coefficient (1/(m·Hz^2))
+    epsilon: int = 0
+    beta_3: float = 0.14e-39
+    Cr: float = 0.028 / 1e3 / 1e12
 
     # Fiber Parameters
-    alpha_db: float = 0.2  # Fiber attenuation in dB/km
-    alpha_norm: float = field(init=False)
-    beta_2: float = -21.7e-27  # Second-order dispersion (s^2/m)
-    gama: float = 1.21e-3  # Nonlinear parameter (1/(W·m))
-    L_eff_a: float = field(init=False)
+    alpha_db: float = 0.2 
+    beta_2: float = -21.7e-27 
+    gama: float = 1.21e-3 
+
+    # Noise figures (converted from dB to linear scale)
     F_C: float = field(default_factory=lambda: 10 ** 0.45)  # Noise figure for C-band (6 dB)
     F_L: float = field(default_factory=lambda: 10 ** 0.5)   # Noise figure for L-band (6 dB)
 
-    # System Transmission Parameters
-    Rs_mat: float = 40e9  # Symbol rate (Baud)
-    MFL: np.ndarray = field(default_factory=lambda: np.arange(1, 7))  # Modulation format levels
-    rof: float = 0.1  # Roll-off factor
-    B_ch_mat: float = field(init=False)
-    B_ch: float = field(init=False)
+    # Symbol transmission
+    Rs_mat: float = 40e9 
+    MFL: np.ndarray = field(default_factory=lambda: np.arange(1, 7)) 
+    rof: float = 0.1 
+
+    # Computed attributes (set in __post_init__)
+    alpha_norm: float = field(init=False)  # 1/m
+    L_eff_a: float = field(init=False)     # m
+    B_ch_mat: float = field(init=False)    # Hz
+    B_ch: float = field(init=False)        # Hz (alias for B_ch_mat)
 
     def __post_init__(self):
-        # Computed fields
+        """
+        Perform post-initialization computations for dependent parameters.
+        """
+        # Convert attenuation from dB/km to 1/m (natural units)
         self.alpha_norm = self.alpha_db / (10 * np.log10(np.exp(1)) * 1e3)
+
+        # Compute effective fiber length
         self.L_eff_a = 1 / self.alpha_norm
+
+        # Compute channel bandwidth
         self.B_ch_mat = self.Rs_mat * (1 + self.rof)
-        self.B_ch = self.B_ch_mat
+        self.B_ch = self.B_ch_mat  # alias
 
 class Band:
     """Class representing an optical transmission band with its characteristics.
     
-    This class handles the multi-band specifications and calculations for optical
-    transmission parameters in the 6D-MAN planning tool.
+        Used in multi-band optical network planning. Stores frequency grid information
+        for the specified band (e.g., C-band, L-band), and provides utilities to 
+        compute the channel frequencies.
+
+        Attributes:
+            name (str): Band identifier (e.g., 'C', 'L')
+            start_freq (float): Start frequency in THz
+            end_freq (float): End frequency in THz
+            channel_spacing (float): Channel spacing in THz (default: 0.05 THz = 50 GHz)
+            spectrum (np.ndarray): Array of center frequencies for each channel
+            num_channels (int): Total number of channels in the band
     """
     
     def __init__(self, 
@@ -62,29 +99,42 @@ class Band:
                  end_freq: float,
                  opt_params: OpticalParameters,
                  network_instance: Network,
-                 channel_spacing: float = 0.05):  # 50 GHz (0.05 THz) default spacing
-        
-        """Initialize Band instance.
-        
-        Args:
-            name: Name identifier for the band (e.g., 'C', 'L', 'S')
-            start_freq: start frequency of the band (THz)
-            end_freq: end frequency of the band (THz)
-            opt_params: Optical transmission parameters for this band
-            channel_spacing: Channel spacing in THz (default: 0.05 THz)
+                 channel_spacing: float = 0.05):
         """
+        Initialize Band instance.
+
+        Args:
+            name (str): Band name (e.g., 'C', 'L')
+            start_freq (float): Start frequency in THz
+            end_freq (float): End frequency in THz
+            opt_params (OpticalParameters): Optical transmission parameters
+            network_instance (Network): Reference to the associated network
+            channel_spacing (float, optional): Frequency spacing between channels in THz
+        """
+        if start_freq >= end_freq:
+            raise ValueError("start_freq must be less than end_freq")
+        if channel_spacing <= 0:
+            raise ValueError("channel_spacing must be positive")
+
         self.name = name
         self.start_freq = start_freq
         self.end_freq = end_freq
+        self.channel_spacing = channel_spacing
         self.opt_params = opt_params
         self.network = network_instance
-        self.channel_spacing = channel_spacing
-        self.calc_spectrum()  # Calculate frequency grid upon initialization
-                       
-    def calc_spectrum(self):
-        """Calculate derived optical parameters."""
-                
-        # Calculate frequency grid
+
+        # Computed attributes
+        self.spectrum: np.ndarray = self.calc_spectrum()
+        self.num_channels: int = len(self.spectrum)
+                               
+    def calc_spectrum(self) -> np.ndarray:
+        """
+        Compute the frequency grid (spectrum) for this band based on
+        start_freq, end_freq, and channel_spacing.
+
+        Returns:
+            np.ndarray: Array of center frequencies in THz.
+        """
         return  np.flip(np.arange(self.start_freq, self.end_freq, step = self.channel_spacing))
     
     def process_link_gsnr(self,
@@ -97,9 +147,22 @@ class Band:
                           minimum_hierarchy_level: int, 
                           result_directory):
         """
-        Function to process a single link in parallel.
-        Receives extra parameters from the main function using `functools.partial()`.
+        Processes the GSNR and throughput of all links at a given hierarchy level.
+
+        Parameters:
+            f_c_axis (np.ndarray): Center frequencies of the channels [THz].
+            Pch_dBm (np.ndarray): Launch power per channel [dBm].
+            num_Ch_mat (np.ndarray): Channel indices or count for modulation processing.
+            spectrum_C (np.ndarray): C-band frequency set (used for band-dependent params).
+            Nspan_array (np.ndarray): Number of fiber spans per link.
+            hierarchy_level (int): Current hierarchy level of the network topology.
+            minimum_hierarchy_level (int): Lowest level to include in analysis.
+            result_directory (Path): Output directory for caching intermediate results.
+
+        Returns:
+            Tuple: GSNR matrix, throughput per power, optimal throughput, and optimal power array.
         """
+
         file_name = result_directory / f'{self.network.topology_name}_process_GSNR_HL{hierarchy_level}.npz'
 
         if os.path.exists(file_name):
@@ -120,7 +183,7 @@ class Band:
             h_plank = self.opt_params.h_plank
             F_C = self.opt_params.F_C
             F_L = self.opt_params.F_L
-            gama = self.opt_params.gama
+            gamma = self.opt_params.gama
             epsilon = self.opt_params.epsilon
             phi_MFL = self.opt_params.phi_MFL
 
@@ -139,7 +202,7 @@ class Band:
             alpha_norm_bar = alpha_norm
             A = alpha_norm + alpha_norm_bar  # Auxiliary parameter
 
-            subgraph, _ = self.network.calculate_subgraph(hierarchy_level, minimum_hierarchy_level)
+            subgraph, _ = self.network.compute_hierarchy_subgraph(hierarchy_level, minimum_hierarchy_level)
             HL_links = np.array(list(subgraph.edges(data = 'weight')))
             mask = np.any(np.all(self.network.all_links[:, None] == HL_links, axis=2), axis=1)
             HL_links_indices = np.where(mask)[0]
@@ -182,7 +245,7 @@ class Band:
                         T_tilda = -P_tot * Cr * (f_cut - fc) / alpha_norm_bar  # Compute auxiliary parameter
                         G_ASE = (1 + T_tilda) * np.exp(-alpha_norm * length_span) - T_tilda * np.exp(
                             - (alpha_norm + alpha_norm_bar) * length_span)  # ASE Gain
-                        # n_s = 1  # Number of spans
+
                         eta_total = 0  # Initialize non-linear coefficient
 
                         if n_s == 1:
@@ -192,9 +255,6 @@ class Band:
 
                         # Define modulation format level (MFL) value
                         MFL = 6
-
-                        # Create a mask to distinguish between C-band and L-band frequencies
-                        C_band_mask = num_fcut <= len(spectrum_C) - 1
 
                         # Compute ASE noise power based on the gain and frequency band
                         P_ASE_span = n_s * B_ch * h_plank * f_cut * (1 / G_ASE) * (
@@ -220,7 +280,7 @@ class Band:
 
                         # Compute self-channel interference (SCI) for matched frequencies
                         # mainly caused by self-phase modulation (SPM) and intrachannel interactions
-                        eta_SCI[match_f_cut] = (4 / 9) * (gama / B_ch) ** 2 * ((np.pi * n_s ** (1 + epsilon)) / (
+                        eta_SCI[match_f_cut] = (4 / 9) * (gamma / B_ch) ** 2 * ((np.pi * n_s ** (1 + epsilon)) / (
                                 phi_cut * alpha_norm_bar * (2 * alpha_norm + alpha_norm_bar))) * (
                                                     (T_cut - alpha_norm ** 2) / alpha_norm) * np.arcsinh(
                             (phi_cut * B_ch ** 2) / (np.pi * alpha_norm)) + (
@@ -229,14 +289,14 @@ class Band:
                         # eta efficiency factors
                         # Compute cross-channel interference (XCI) for non-matching frequencies (adjacent channels)
                         #  primarily caused by cross-phase modulation (XPM) and four-wave mixing (FWM).
-                        eta_XCI[~match_f_cut] = ((32 / 27) * (p_k / p_cut) ** 2 * (gama ** 2 / B_ch) *
+                        eta_XCI[~match_f_cut] = ((32 / 27) * (p_k / p_cut) ** 2 * (gamma ** 2 / B_ch) *
                                                 (((n_s + (5 / 6) * phi_MFL[MFL - 1]) /
                                                 (phi_cut_k * alpha_norm_bar *
                                                     (2 * alpha_norm + alpha_norm_bar))) * part_1))[~match_f_cut]
 
                         # Compute modulation format loss-induced XCI (XCI_MFL)
                         # modulation format affects the interference propagation, particularly in flexible-grid networks.
-                        eta_XCI_MFL[~match_f_cut] = ((32 / 27) * (p_k / Ptx) ** 2 * (gama ** 2 / B_ch) * (5 / 3) * (
+                        eta_XCI_MFL[~match_f_cut] = ((32 / 27) * (p_k / Ptx) ** 2 * (gamma ** 2 / B_ch) * (5 / 3) * (
                                 ((phi_MFL[MFL - 1] * n_bar * np.pi * T_k) /
                                 (np.abs(phi) * B_ch ** 2 * alpha_norm ** 2 * A ** 2)) *
                                 ((2 * np.abs(delta_f) - B_ch) * np.log((2 * np.abs(delta_f) - B_ch) /

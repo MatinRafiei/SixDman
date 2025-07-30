@@ -18,15 +18,12 @@ import sys
 import os
 # Navigate relative to the current working directory
 sys.path.append(os.path.abspath(src_dir))
-# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
 import numpy as np
 import pandas as pd
 from sixdman.core.network import Network
 from sixdman.core.band import Band, OpticalParameters
 from sixdman.core.planning import PlanningTool
-from sixdman.core.visualize import analyse_result
-import networkx as nx
-import ast
+import json
 from scipy.io import loadmat
 
 print('Create Network Instance: ...')
@@ -38,7 +35,7 @@ network = Network(topology_name = 'MAN157')
 network.load_topology(filepath = project_root / 'data' / 'MAN157Nodes.mat', matrixName ='MAN157Nodes')
 
 # Set hierarchical levels
-hl_dict = network.set_hierarchical_levels(
+hl_dict = network.define_hierarchy(
     HL1_standalone = [1, 5],
     HL2_standalone = [0, 2, 3, 4],
     HL3_standalone = list(range(6, 39)),
@@ -140,8 +137,8 @@ for hierarchy_level in processing_level_list:
             capacity_updt_index = 2
             prev_hierarchy_level = None
 
-    _, subnetMatrix_HL = network.calculate_subgraph(hierarchy_level, minimum_hierarchy_level)
-    HL_connected_nodes = network.find_neighbors(HL_Standalone)
+    _, subnetMatrix_HL = network.compute_hierarchy_subgraph(hierarchy_level, minimum_hierarchy_level)
+    HL_connected_nodes = network.get_neighbor_nodes(HL_Standalone)
     
     file_name = results_dir / f"{network.topology_name}_HL{hierarchy_level}_K_path_attributes.csv"
 
@@ -150,8 +147,8 @@ for hierarchy_level in processing_level_list:
         print(f"Loading K-path attributes of HL{hierarchy_level} ...")
 
         K_path_attributes_df = pd.read_csv(file_name)
-        K_path_attributes_df['links'] = K_path_attributes_df['links'].apply(ast.literal_eval)
-        K_path_attributes_df['nodes'] = K_path_attributes_df['nodes'].apply(ast.literal_eval)
+        K_path_attributes_df['links'] = K_path_attributes_df['links'].map(json.loads)
+        K_path_attributes_df['nodes'] = K_path_attributes_df['nodes'].map(json.loads)
     else:
 
         print(f"Calculating K-path attributes of HL{hierarchy_level} ...")
@@ -179,8 +176,8 @@ for hierarchy_level in processing_level_list:
         print(f"Loading K-path attributes of HL{hierarchy_level} colocated...")
 
         K_path_attributes_colocated_df = pd.read_csv(file_name)
-        K_path_attributes_colocated_df['links'] = K_path_attributes_colocated_df['links'].apply(ast.literal_eval)
-        K_path_attributes_colocated_df['nodes'] = K_path_attributes_colocated_df['nodes'].apply(ast.literal_eval)
+        K_path_attributes_colocated_df['links'] = K_path_attributes_colocated_df['links'].map(json.loads)
+        K_path_attributes_colocated_df['nodes'] = K_path_attributes_colocated_df['nodes'].map(json.loads)
     else:
 
         print(f"Calculating K-path attributes of HL{hierarchy_level} colocated...")
@@ -203,7 +200,6 @@ for hierarchy_level in processing_level_list:
         K_path_attributes_colocated_df.to_csv(file_name, index = False)
 
     
-
     # sort dataframes based on num_hops and distance (in order)
     K_path_attributes_df_sorted = K_path_attributes_df.groupby(['src_node'], group_keys = False).apply(lambda x: x.sort_values(['num_hops', 'distance']))
     K_path_attributes_colocated_df_sorted = K_path_attributes_colocated_df.groupby(['src_node', 'dest_node'], group_keys = False).apply(lambda x: x.sort_values(['num_hops', 'distance']))
@@ -241,18 +237,17 @@ for hierarchy_level in processing_level_list:
     print(f"running planner for HL{hierarchy_level} ...")
 
     # run the planner for the current hierarchy level    
-    planner.run_planner(HL_dict = hl_dict[f"HL{hierarchy_level}"],
-                pairs_disjoint = pairs_disjoint,
-                kpair_standalone = 1,
-                kpair_colocated = 1,
-                candidate_paths_standalone_df = K_path_attributes_df,
-                candidate_paths_colocated_df = K_path_attributes_colocated_df,
-                GSNR_opt_link = GSNR_opt_link,
-                prev_hierarchy_level = prev_hierarchy_level,
-                hierarchy_level = hierarchy_level,
-                minimum_level = minimum_hierarchy_level, 
-                node_cap_update_idx = capacity_updt_index, 
-                result_directory = results_dir)
+    planner.run_planner(hierarchy_level = hierarchy_level,
+                        prev_hierarchy_level = prev_hierarchy_level,
+                        pairs_disjoint = pairs_disjoint,
+                        kpair_standalone = 1,
+                        kpair_colocated = 1,
+                        candidate_paths_standalone_df = K_path_attributes_df,
+                        candidate_paths_colocated_df = K_path_attributes_colocated_df,
+                        GSNR_opt_link = GSNR_opt_link,
+                        minimum_level = minimum_hierarchy_level, 
+                        node_cap_update_idx = capacity_updt_index, 
+                        result_directory = results_dir)
 
 analysing = analyse_result(network, planner, processing_level_list, results_dir)
 path_km = analysing.calc_latency(primary_paths = planner.primary_path_storage, 
