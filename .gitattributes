@@ -1,0 +1,21 @@
+# Auto detect text files and normalize line endings
+* text=auto
+
+# Explicitly set line endings for specific file types
+*.py text eol=lf
+*.ipynb text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sh text eol=lf
+*.bat text eol=crlf
+
+# Binary files should not be modified
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.npz binary
+*.mat binary
+*.csv text eol=lf

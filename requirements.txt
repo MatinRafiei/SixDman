@@ -1,0 +1,17 @@
+# Core scientific libraries
+numpy>=1.23
+pandas>=1.5
+scipy>=1.14
+
+# Graph/network analysis
+networkx>=3.0
+
+# Visualization
+matplotlib>=3.7
+
+# Jupyter Notebook support
+notebook>=6.5
+jupyterlab>=3.6
+
+# Testing
+pytest>=8.0

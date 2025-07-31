@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sixdman"
+version = "0.1.0"
+description = "A Python-based toolkit for optical network modeling, planning, and analysis."
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Matin Rafiei Forooshani", email = "matinrafiei007@gmail.com" }
+]
+maintainers = [
+    { name = "Matin Rafiei Forooshani", email = "matinrafiei007@gmail.com" }
+]
+keywords = [
+    "optical networks",
+    "network planning",
+    "telecommunication",
+    "simulation",
+    "networkx",
+    "scipy",
+    "numpy"
+]
+requires-python = ">=3.9"
+
+dependencies = [
+    "numpy>=1.23",
+    "pandas>=1.5",
+    "scipy>=1.14",
+    "networkx>=3.0",
+    "matplotlib>=3.7",
+    "notebook>=6.5",
+    "jupyterlab>=3.6"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/matinrafiei/sixdman"
+"Bug Tracker" = "https://github.com/matinrafiei/sixdman/issues"
+"Documentation" = "https://github.com/matinrafiei/sixdman#readme"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["sixdman*"]
+exclude = ["tests*"]
