@@ -32,6 +32,7 @@ sixdman/
 ├── tests/                # Unit tests for each module
 ├── examples/             # Jupyter notebooks for simulation examples
 ├── data/                 # Example data files (.mat, .npz)
+├── docs/                 # documentation files
 ├── results/              # Generated results and network KPIs
 ```
 ## 📖 Documentation
