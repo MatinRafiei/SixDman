@@ -34,5 +34,11 @@ extensions = [
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_book_theme'
-html_static_path = ['_static']
-autodoc_member_order = 'bysource'
+# html_static_path = ['_static']
+
+autodoc_member_order = "bysource"
+autodoc_default_options = {
+    "members": True,
+    "undoc-members": True,
+    "show-inheritance": True,
+}
