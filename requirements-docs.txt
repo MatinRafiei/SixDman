@@ -2,3 +2,4 @@ sphinx
 sphinx-book-theme
 sphinx-rtd-theme
 myst-parser
+sphinx-autodoc-typehints
