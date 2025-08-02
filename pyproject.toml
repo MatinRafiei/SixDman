@@ -36,9 +36,9 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/matinrafiei/sixdman"
-"Bug Tracker" = "https://github.com/matinrafiei/sixdman/issues"
-"Documentation" = "https://github.com/matinrafiei/sixdman#readme"
+"Homepage" = "https://github.com/MatinRafiei/SixDman.git"
+"Bug Tracker" = "https://github.com/MatinRafiei/SixDman/issues"
+"Documentation" = "https://github.com/MatinRafiei/SixDman#readme"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

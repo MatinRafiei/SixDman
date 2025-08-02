@@ -50,7 +50,7 @@ sixdman/
     .venv\Scripts\activate       # Windows
     
     # Install the package
-    pip install git+https://github.com/MatinRafiei/6D-MAN.git
+    pip install git+https://github.com/MatinRafiei/SixDman.git
     ```
 - Option 2: Using Conda (Recommended for data science users)  
 
@@ -62,14 +62,14 @@ sixdman/
   conda activate sixdman-env
   
   # Install the package
-  pip install git+https://github.com/MatinRafiei/6D-MAN.git
+  pip install git+https://github.com/MatinRafiei/SixDman.git
   ```
 2️⃣ Editable Install (Development Mode)
 
   Clone the repository:
   
   ```bash
-  git clone https://github.com/matinrafiei/sixdman.git
+  git clone https://github.com/MatinRafiei/SixDman.git
   cd sixdman
   ```
 

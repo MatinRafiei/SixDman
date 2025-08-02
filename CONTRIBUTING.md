@@ -32,8 +32,8 @@ There are several ways you can contribute:
    - **Clone your fork**
 
       ```bash
-      git clone https://github.com/your-username/6D-MAN.git
-      cd 6D-MAN
+      git clone https://github.com/your-username/SixDman.git
+      cd SixDman
       ```
    
      ```bash
@@ -78,7 +78,7 @@ There are several ways you can contribute:
 1. Clone the repo and create a virtual environment:
 
    ```bash
-   git clone https://github.com/matinrafiei/sixdman.git
+   git clone https://github.com/MatinRafiei/SixDman.git
    cd sixdman
    python -m venv .venv
    source .venv/bin/activate  # Linux/Mac
@@ -96,6 +96,6 @@ There are several ways you can contribute:
    ```
 
 ### 📜 Code of Conduct
-Please note that this project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).  
+Please note that this project follows the [Contributor Covenant Code of Conduct](../../CODE_OF_CONDUCT.md).  
 Be respectful and collaborative.
 

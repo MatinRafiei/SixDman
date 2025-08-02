@@ -17,7 +17,7 @@ How to Contribute
 There are several ways you can contribute to SixDman:
 
 1. **Report Bugs**
-   - Check existing `issues <https://github.com/MatinRafiei/6D-MAN/issues>`_ to see if the bug is already reported.
+   - Check existing `issues <https://github.com/MatinRafiei/SixDman/issues>`_ to see if the bug is already reported.
    - Open a new issue and provide:
      - Steps to reproduce
      - Expected behavior
@@ -41,8 +41,8 @@ There are several ways you can contribute to SixDman:
 
      .. code-block:: bash
 
-        git clone https://github.com/your-username/6D-MAN.git
-        cd 6D-MAN
+        git clone https://github.com/your-username/SixDman.git
+        cd SixDman
 
    - **Create a branch**:
 
@@ -91,7 +91,7 @@ Running the Project Locally
 
    .. code-block:: bash
 
-      git clone https://github.com/MatinRafiei/6D-MAN.git
+      git clone https://github.com/MatinRafiei/SixDman.git
       cd sixdman
       python -m venv .venv
       source .venv/bin/activate  # Linux/Mac
@@ -115,5 +115,5 @@ Code of Conduct
 ---------------
 
 Please note that this project follows the
-`Contributor Covenant Code of Conduct <https://github.com/MatinRafiei/6D-MAN/blob/main/CODE_OF_CONDUCT.md>`_.
+`Contributor Covenant Code of Conduct <https://github.com/MatinRafiei/SixDman/blob/main/CODE_OF_CONDUCT.md>`_.
 Be respectful and collaborative when interacting with the community.

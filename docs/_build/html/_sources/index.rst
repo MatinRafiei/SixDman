@@ -77,8 +77,8 @@ Contents
    :maxdepth: 1
    :caption:  Project Info
 
-   License <https://github.com/MatinRafiei/6D-MAN/blob/main/LICENSE>
-   GitHub Repository <https://github.com/MatinRafiei/6D-MAN>
+   License <https://github.com/MatinRafiei/SixDman/blob/main/LICENSE>
+   GitHub Repository <https://github.com/MatinRafiei/SixDman.git>
 
 
 ----
