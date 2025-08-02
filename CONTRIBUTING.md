@@ -96,6 +96,6 @@ There are several ways you can contribute:
    ```
 
 ### 📜 Code of Conduct
-Please note that this project follows the [Contributor Covenant Code of Conduct](../CODE_OF_CONDUCT.md).  
+Please note that this project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).  
 Be respectful and collaborative.
 
