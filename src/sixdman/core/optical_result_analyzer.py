@@ -34,6 +34,16 @@ class analyse_result:
             period_time (int): Simulation or planning time period (e.g., 10 years).
             processing_level_list (List[int]): Hierarchy levels to process (e.g., [2, 3, 4]).
             save_directory (Path): Path to the directory where .npz result files are stored.
+
+        Example:
+        --------
+        >>> from sixdman.core.optical_result_analyzer import analyse_result
+        >>> analyser = analyse_result(
+        ...     net, # Network instance
+        ...     10, # Planning period time in years
+        ...     processing_level_list, # List of hierarchy levels to analyze
+        ...     results_dir # Directory where results are saved
+        ... )
         """
         self.network = network_instance
         self.period_time = period_time
@@ -42,7 +52,7 @@ class analyse_result:
         self.link_data = {}
         self.bvt_data = {}
         
-    def load_data(self):
+    def _load_data(self):
 
         """
         Load link and BVT result data for each hierarchy level.
@@ -102,8 +112,16 @@ class analyse_result:
         Returns:
             np.ndarray: If flag_plot == 0, returns the link state matrix of shape (years, total_links).
                         Each element corresponds to the FP number assigned to a specific link in a given year.
+
+        Example:
+        ---------
+        >>> analyser.plot_link_state(
+        ...     splitter, # List of integers indicating the number of links per hierarchy level
+        ...     save_flag = 0, # If 1, save the plot; if 0, do not save
+        ...     ave_suffix = "_NoBypass" # Optional suffix for the saved file name
+        ... )
         """
-        self.load_data()
+        self._load_data()
 
         # Initialize an empty array to hold FP numbers across all hierarchy levels and years
         link_state_HL_partisioned = np.empty(shape=(self.period_time, 0))
@@ -183,8 +201,16 @@ class analyse_result:
 
         Returns:
             None
+
+        Example:
+        --------
+        >>> analyser.plot_FP_usage(
+        ...     save_flag = 0, # If 1, save the plot; if 0, do not save
+        ...     save_suffix = "_NoBypass" # Optional suffix for the saved file name
+        ... )
+
         """
-        self.load_data()  # Load link data for all hierarchy levels
+        self._load_data()  # Load link data for all hierarchy levels
         year = np.arange(1, self.period_time + 1)  # e.g., years 1 to 10
 
         if flag_plot == 1:
@@ -257,8 +283,16 @@ class analyse_result:
 
         Returns:
             None
+
+        Example:
+        --------
+        >>> analyser.plot_FP_degree(
+        ...     save_flag = 0, # If 1, save the plot; if 0, do not save
+        ...     save_suffix = "_NoBypass" # Optional suffix for the saved file name
+        ... )
+
         """
-        self.load_data()
+        self._load_data()
         year = np.arange(1, self.period_time + 1)
 
         if flag_plot == 1:
@@ -342,8 +376,16 @@ class analyse_result:
 
         Returns:
             None
+
+        Example:
+        --------
+        >>> analyser.plot_bvt_license(
+        ...     save_flag = 0, # If 1, save the plot; if 0, do not save
+        ...     save_suffix = "_NoBypass" # Optional suffix for the saved file name
+        ... )
+
         """
-        self.load_data()
+        self._load_data()
         year = np.arange(1, self.period_time + 1)
 
         if flag_plot == 1:
@@ -437,12 +479,20 @@ class analyse_result:
 
         Returns:
             dict: A dictionary containing vectors for OPEX and CAPEX components.
+
+        Example:
+        ---------
+        >>> analyser.calc_cost(
+        ...     save_flag = 0, # If 1, save the results; if 0, do not save
+        ...     save_suffix = "_NoBypass" # Optional suffix for the saved file name
+        ... ) # Returns a dictionary with OPEX and CAPEX components
+
         """
 
         cost_dict = {}
 
         # --- Load data and compute usage from prior functions ---
-        self.load_data()
+        self._load_data()
         self.plot_FP_degree(flag_plot=0, save_flag=0)
         self.plot_bvt_license(flag_plot=0, save_flag=0)
 
@@ -550,6 +600,14 @@ class analyse_result:
         Returns:
             np.ndarray: 
                 Array of total latency values in microseconds, one per HL4 node.
+
+        Example:
+        ---------
+        >>> analyser.calc_latency(
+        ...     primary_paths = planner.primary_path_storage, # storage of primary paths
+        ...     processing_level_list = processing_level_list, # List of hierarchy levels to process
+        ...     save_flag = 0 # If 1, save the results; if 0, do not save
+        ... )
         """
         # HLx hierarchy is traversed top-down; HL4 assumed to be the lowest
         minimum_hierarchy_level = processing_level_list[0]

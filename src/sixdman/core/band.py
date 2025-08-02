@@ -1,4 +1,3 @@
-from typing import Dict, List, Optional, Union
 import numpy as np
 import os
 from dataclasses import dataclass, field
@@ -29,6 +28,13 @@ class OpticalParameters:
         L_eff_a (float): Effective length (m)
         B_ch_mat (float): Channel bandwidth (Hz)
         B_ch (float): Channel bandwidth (Hz) [alias]
+
+    Example:
+    ------- 
+    >>> from sixdman.core.band import OpticalParameters
+    
+    >>> # Define C-band parameters
+    >>> c_band_params = OpticalParameters()
     """
     
     # Fundamental constants
@@ -91,6 +97,7 @@ class Band:
             channel_spacing (float): Channel spacing in THz (default: 0.05 THz = 50 GHz)
             spectrum (np.ndarray): Array of center frequencies for each channel
             num_channels (int): Total number of channels in the band
+        
     """
     
     def __init__(self, 
@@ -110,6 +117,20 @@ class Band:
             opt_params (OpticalParameters): Optical transmission parameters
             network_instance (Network): Reference to the associated network
             channel_spacing (float, optional): Frequency spacing between channels in THz
+
+        Example:
+        -------    
+        >>> from sixdman.core.band import Band
+
+        >>> # Create C-band instance
+        >>> c_band = Band(
+        ... name = 'C', # Band name
+        ... start_freq = 190.65, # start frequency of this band in THz
+        ... end_freq = 196.675, # end frequency of this band in THz
+        ... opt_params = c_band_params, # the optical parameters instance
+        ... network_instance = net, # the network instance
+        ... channel_spacing = 0.05 # 50 GHz Channel spacing
+        ... )
         """
         if start_freq >= end_freq:
             raise ValueError("start_freq must be less than end_freq")
@@ -134,6 +155,13 @@ class Band:
 
         Returns:
             np.ndarray: Array of center frequencies in THz.
+
+        Example:
+        ------- 
+        >>> # define C-band frequency slots
+        >>> spectrum_C = c_band.calc_spectrum()
+        >>> # define total number of frequency slots
+        >>> num_fslots = len(spectrum_C)
         """
         return  np.flip(np.arange(self.start_freq, self.end_freq, step = self.channel_spacing))
     
@@ -161,6 +189,25 @@ class Band:
 
         Returns:
             Tuple: GSNR matrix, throughput per power, optimal throughput, and optimal power array.
+
+        Example:
+        -------
+        >>> f_c_axis = spectrum_C * 1e12  # Convert to Hz
+        >>> Pch_dBm = np.arange(-6, -0.9, 0.1)  # Channel power in dBm
+        >>> num_Ch_mat = np.arange(1, len(spectrum_C) - 1)  # Channel indices
+
+        >>> # Calculate GSNR and throughput for the HL2 links
+        >>> results_dir = Path('results')  # Define your results directory
+        >>> GSNR_opt_link, _, _, _ = c_band.process_link_gsnr(
+        ...     f_c_axis = f_c_axis, 
+        ...     Pch_dBm = Pch_dBm, 
+        ...     num_Ch_mat = num_Ch_mat,
+        ...     spectrum_C = spectrum_C, # C-band frequency spectrum
+        ...     Nspan_array = np.ones(network.all_links.shape[0], dtype=int),
+        ...     hierarchy_level = 4, # Current hierarchy level
+        ...     minimum_hierarchy_level = 4, # minimum hierarchy level to include in analysis
+        ...     result_directory = results_dir # Directory to save results
+        ... )
         """
 
         file_name = result_directory / f'{self.network.topology_name}_process_GSNR_HL{hierarchy_level}.npz'

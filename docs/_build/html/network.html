@@ -1,0 +1,860 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Network Module &#8212; SixDman 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'network';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Band Module" href="band.html" />
+    <link rel="prev" title="Quick Start" href="quickstart.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">SixDman 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Network Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="band.html">Band Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="planning.html">Planning Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Optical Result Analyzer Module</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to SixDman</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Project Info</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference external" href="https://github.com/MatinRafiei/6D-MAN/blob/main/LICENSE">License</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/MatinRafiei/6D-MAN">GitHub Repository</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/network.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Network Module</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-overview">Module Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-classes">Key Classes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.graph"><code class="docutils literal notranslate"><span class="pre">Network.graph</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.hierarchical_levels"><code class="docutils literal notranslate"><span class="pre">Network.hierarchical_levels</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.topology_name"><code class="docutils literal notranslate"><span class="pre">Network.topology_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.__init__"><code class="docutils literal notranslate"><span class="pre">Network.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.load_topology"><code class="docutils literal notranslate"><span class="pre">Network.load_topology()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.define_hierarchy"><code class="docutils literal notranslate"><span class="pre">Network.define_hierarchy()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.compute_hierarchy_subgraph"><code class="docutils literal notranslate"><span class="pre">Network.compute_hierarchy_subgraph()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.get_neighbor_nodes"><code class="docutils literal notranslate"><span class="pre">Network.get_neighbor_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.compute_k_shortest_paths"><code class="docutils literal notranslate"><span class="pre">Network.compute_k_shortest_paths()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.get_node_degrees"><code class="docutils literal notranslate"><span class="pre">Network.get_node_degrees()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.land_pair_finder"><code class="docutils literal notranslate"><span class="pre">Network.land_pair_finder()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.calc_num_pair"><code class="docutils literal notranslate"><span class="pre">Network.calc_num_pair()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-methods">Key Methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notes">Notes</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="network-module">
+<h1>Network Module<a class="headerlink" href="#network-module" title="Link to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">network</span></code> module provides tools for <strong>modeling optical network topologies</strong>,
+loading them from different file formats, and preparing the data for
+<strong>planning and simulation</strong> in the SixDman toolkit.</p>
+<section id="module-overview">
+<h2>Module Overview<a class="headerlink" href="#module-overview" title="Link to this heading">#</a></h2>
+<p>This module is responsible for:</p>
+<ul class="simple">
+<li><p>Representing an optical network topology using <strong>NetworkX graphs</strong>.</p></li>
+<li><p>Loading adjacency matrices from <code class="docutils literal notranslate"><span class="pre">.mat</span></code>, <code class="docutils literal notranslate"><span class="pre">.npz</span></code>, or <code class="docutils literal notranslate"><span class="pre">.npy</span></code> files.</p></li>
+<li><p>Set the hierarchy level of different nodes in the network.</p></li>
+<li><p>Compute k-shortest paths between source and destination nodes using Yen’s algorithm.</p></li>
+<li><p>Identify link- and node-disjoint path pairs (LAND pairs) for each source node.</p></li>
+</ul>
+</section>
+<section id="key-classes">
+<h2>Key Classes<a class="headerlink" href="#key-classes" title="Link to this heading">#</a></h2>
+<ul>
+<li><dl>
+<dt><strong>Network</strong></dt><dd><dl class="py class">
+<dt class="sig sig-object py" id="sixdman.core.network.Network">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sixdman.core.network.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topology_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sixdman.core.network.Network" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class representing an optical network topology and its properties.</p>
+<p>This class handles the network topology, hierarchical levels, and path computation
+for the SixDman planning tool.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sixdman.core.network.Network.graph">
+<span class="sig-name descname"><span class="pre">graph</span></span><a class="headerlink" href="#sixdman.core.network.Network.graph" title="Link to this definition">#</a></dt>
+<dd><p>NetworkX graph representing the network topology graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>nx.Graph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sixdman.core.network.Network.hierarchical_levels">
+<span class="sig-name descname"><span class="pre">hierarchical_levels</span></span><a class="headerlink" href="#sixdman.core.network.Network.hierarchical_levels" title="Link to this definition">#</a></dt>
+<dd><p>Dictionary containing nodes organized by hierarchical level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Dict[str, List[str]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sixdman.core.network.Network.topology_name">
+<span class="sig-name descname"><span class="pre">topology_name</span></span><a class="headerlink" href="#sixdman.core.network.Network.topology_name" title="Link to this definition">#</a></dt>
+<dd><p>Name of the network topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sixdman.core.network.Network.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topology_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sixdman.core.network.Network.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize a Network instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>topology_name</strong> (<em>str</em>) – Name of the network topology.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">sixdman.core.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="s2">&quot;ExampleNetwork&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sixdman.core.network.Network.load_topology">
+<span class="sig-name descname"><span class="pre">load_topology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrixName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sixdman.core.network.Network.load_topology" title="Link to this definition">#</a></dt>
+<dd><p>Load network topology from .mat, .npz, or .npy file.</p>
+<p>This function reads an adjacency matrix from a file, converts it to a
+NetworkX graph, and initializes related network attributes.</p>
+<dl class="simple">
+<dt>Supported formats:</dt><dd><ul class="simple">
+<li><p>.mat : MATLAB file (requires <cite>matrixName</cite> to specify the variable)</p></li>
+<li><p>.npz : NumPy compressed archive (variable name required if multiple arrays exist)</p></li>
+<li><p>.npy : NumPy single-array file</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – Path to the file containing network topology.</p></li>
+<li><p><strong>matrixName</strong> (<em>str</em>) – Name of the adjacency matrix variable in .mat or .npz files.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A NetworkX graph representing the loaded network topology.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>nx.Graph</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the file does not exist.</p></li>
+<li><p><strong>ValueError</strong> – If the adjacency matrix is empty or invalid.</p></li>
+<li><p><strong>KeyError</strong> – If the specified matrixName does not exist in the file.</p></li>
+<li><p><strong>IOError</strong> – If there is an error loading the file or parsing the matrix.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">load_topology</span><span class="p">(</span><span class="s2">&quot;path/to/topology.mat&quot;</span><span class="p">,</span> <span class="n">matrixName</span><span class="o">=</span><span class="s2">&quot;adjacency_matrix&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sixdman.core.network.Network.define_hierarchy">
+<span class="sig-name descname"><span class="pre">define_hierarchy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sixdman.core.network.Network.define_hierarchy" title="Link to this definition">#</a></dt>
+<dd><p>Set the hierarchical levels of nodes in the network.</p>
+<p>This method allows flexible assignment of nodes to hierarchical levels
+(HL1, HL2, …) with optional <cite>standalone</cite> and <cite>colocated</cite> classifications.</p>
+<dl class="simple">
+<dt>Behavior:</dt><dd><ul class="simple">
+<li><p>Accepts keyword arguments like HL1_standalone, HL2_colocated, etc.</p></li>
+<li><p><cite>standalone</cite> nodes are unique to that level.</p></li>
+<li><p><cite>colocated</cite> nodes are shared with previous levels if not explicitly given.</p></li>
+<li><p>If a <cite>_colocated</cite> list is not provided, it is <strong>auto-accumulated</strong> from all previous standalone nodes.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Variable keyword arguments for HLx_standalone and HLx_colocated.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated hierarchical levels structure.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Dict[str, List[str]]]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">HL_dict</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">define_hierarchy</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">HL3_standalone</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">HL4_standalone</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">HL4_colocated</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">HL4_Standalone</span> <span class="o">=</span> <span class="n">hl_dict</span><span class="p">[</span><span class="s1">&#39;HL4&#39;</span><span class="p">][</span><span class="s1">&#39;standalone&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">HL4_colocated</span> <span class="o">=</span> <span class="n">hl_dict</span><span class="p">[</span><span class="s1">&#39;HL4&#39;</span><span class="p">][</span><span class="s1">&#39;colocated&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">HL4_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">HL4_Standalone</span><span class="p">,</span> <span class="n">HL4_colocated</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sixdman.core.network.Network.compute_hierarchy_subgraph">
+<span class="sig-name descname"><span class="pre">compute_hierarchy_subgraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hierarchy_level</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_hierarchy_level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sixdman.core.network.Network.compute_hierarchy_subgraph" title="Link to this definition">#</a></dt>
+<dd><p>Extract a subgraph from the network based on hierarchical constraints.</p>
+<p>Constructs a subgraph that includes edges where at least one endpoint is in
+the specified hierarchy level (HLx), and the other is not in any lower level
+between HL(x+1) and HL(minimum).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hierarchy_level</strong> (<em>int</em>) – The current HL level (e.g., 1 for HL1).</p></li>
+<li><p><strong>minimum_hierarchy_level</strong> (<em>int</em>) – The lowest HL level to exclude from edge participation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>The resulting NetworkX subgraph.</p></li>
+<li><p>The subgraph’s adjacency (cost) matrix with np.inf for missing links.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[nx.Graph, np.ndarray]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">subgraph</span><span class="p">,</span> <span class="n">subnetMatrix</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">compute_hierarchy_subgraph</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">hierarchy_level</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="c1"># Current hierarchy level</span>
+<span class="gp">... </span>    <span class="n">minimum_hierarchy_level</span> <span class="o">=</span> <span class="mi">4</span> <span class="c1"># Minimum hierarchy level to include in analysis</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sixdman.core.network.Network.get_neighbor_nodes">
+<span class="sig-name descname"><span class="pre">get_neighbor_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sixdman.core.network.Network.get_neighbor_nodes" title="Link to this definition">#</a></dt>
+<dd><p>Return the unique neighbors of a given list of nodes in the graph.</p>
+<p>This excludes the input nodes themselves. Each neighbor appears only once
+regardless of how many input nodes it is connected to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – List of node IDs.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sorted list of unique neighbor node IDs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[int]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">neighbors_HL4</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">get_neighbor_nodes</span><span class="p">(</span><span class="n">HL4_standalone</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sixdman.core.network.Network.compute_k_shortest_paths">
+<span class="sig-name descname"><span class="pre">compute_k_shortest_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subnet_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sixdman.core.network.Network.compute_k_shortest_paths" title="Link to this definition">#</a></dt>
+<dd><p>Compute k-shortest paths between source and target nodes using Yen’s algorithm.</p>
+<p>This function computes candidate paths for optical network planning,
+calculates distances, and updates the <cite>paths</cite> list with detailed path information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subnet_matrix</strong> (<em>np.ndarray</em>) – Adjacency matrix of the subnet.</p></li>
+<li><p><strong>paths</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – List to append path dictionaries to (can be empty initially).</p></li>
+<li><p><strong>source</strong> (<em>int</em>) – Source node ID.</p></li>
+<li><p><strong>target</strong> (<em>int</em>) – Target node ID.</p></li>
+<li><p><strong>k</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of paths to compute (default: 20).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Updated list of paths, where each dictionary contains:</dt><dd><ul class="simple">
+<li><p>src_node (int): Source node</p></li>
+<li><p>dest_node (int): Destination node</p></li>
+<li><p>nodes (List[int]): Sequence of nodes in the path</p></li>
+<li><p>links (List[int]): Link indices forming the path</p></li>
+<li><p>distance (float): Total path distance</p></li>
+<li><p>num_hops (int): Number of hops in the path</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Dict]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">src_nodes</span> <span class="o">=</span> <span class="n">HL4_standalone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_nodes</span> <span class="o">=</span> <span class="n">neighbors_HL4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">k_paths</span> <span class="o">=</span> <span class="mi">20</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Define a list to store path attributes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">K_path_attributes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Iterate through each standalone HL4 node</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">src_nodes</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">dest</span> <span class="ow">in</span> <span class="n">target_nodes</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">K_path_attributes</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">compute_k_shortest_paths</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">subnetMatrix</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">K_path_attributes</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">source</span> <span class="o">=</span> <span class="n">src</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">target</span> <span class="o">=</span> <span class="n">dest</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">k</span> <span class="o">=</span> <span class="n">k_paths</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Convert to dataframe</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">K_path_attributes_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">K_path_attributes</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sixdman.core.network.Network.get_node_degrees">
+<span class="sig-name descname"><span class="pre">get_node_degrees</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sixdman.core.network.Network.get_node_degrees" title="Link to this definition">#</a></dt>
+<dd><p>Get the degree of specified nodes in the graph.</p>
+<p>This method returns a dictionary where each key is a node ID, and each value
+is the degree of the corresponding node (the number of edges connected to it).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – List of node IDs for which to retrieve the degree.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary mapping node IDs to their degree (the number of edges).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[int, int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sixdman.core.network.Network.land_pair_finder">
+<span class="sig-name descname"><span class="pre">land_pair_finder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate_paths_sorted</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_pairs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sixdman.core.network.Network.land_pair_finder" title="Link to this definition">#</a></dt>
+<dd><p>Identify link- and node-disjoint path pairs (LAND pairs) for each source node.</p>
+<p>A LAND pair consists of a primary and secondary path where:
+- They connect different destination nodes.
+- They are node-disjoint (except the source).
+- They are link-disjoint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src_list</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – List of source node IDs to process.</p></li>
+<li><p><strong>candidate_paths_sorted</strong> (<em>pd.DataFrame</em>) – DataFrame of candidate paths.
+Must include columns: [‘src_node’, ‘dest_node’, ‘nodes’, ‘links’, ‘index’, ‘distance’, ‘num_hops’].</p></li>
+<li><p><strong>num_pairs</strong> (<em>int</em>) – Maximum number of disjoint pairs to return per source node.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame with columns:</dt><dd><p>[‘primary_path_IDx’, ‘secondary_path_IDx’, ‘numHops_secondary’,
+‘distance_secondary’, ‘src_node’]</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Sort the candidate paths by number of hops and distance</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">K_path_attributes_df_sorted</span> <span class="o">=</span> <span class="n">K_path_attributes_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">[</span><span class="s1">&#39;src_node&#39;</span><span class="p">],</span> <span class="n">group_keys</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;num_hops&#39;</span><span class="p">,</span> <span class="s1">&#39;distance&#39;</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Find 1 disjoint pairs for each source node</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pairs_disjoint</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">land_pair_finder</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">src_nodes</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">K_path_attributes_df_sorted</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">num_pairs</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sixdman.core.network.Network.calc_num_pair">
+<span class="sig-name descname"><span class="pre">calc_num_pair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pairs_disjoint_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sixdman.core.network.Network.calc_num_pair" title="Link to this definition">#</a></dt>
+<dd><p>calculate the number of candidate link &amp; node disjoint (LAND) pairs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pairs_disjoint_df</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></span>) – Dataframe of disjoint_pairs</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Number of candidate LAND pairs for all source nodes</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="key-methods">
+<h2>Key Methods<a class="headerlink" href="#key-methods" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>``__init__(topology_name)``</strong>
+Initializes the network with a given name and hierarchical structure.</p></li>
+<li><p><strong>``load_topology(filepath, matrixName=None)``</strong>
+Loads the adjacency matrix from a file and converts it to a NetworkX graph.
+Supports <strong>.mat</strong>, <strong>.npz</strong>, and <strong>.npy</strong> formats.</p></li>
+<li><p><strong>``define_hierarchy(filepath, matrixName=None)``</strong>
+Set the hierarchical levels of nodes in the network.</p></li>
+<li><p><strong>``compute_k_shortest_paths(subnet_matrix, paths, source, target, k=20)``</strong>
+Compute k-shortest paths between source and target nodes using Yen’s algorithm.</p></li>
+<li><p><strong>``land_pair_finder(src_list, candidate_paths_sorted, num_pairs)``</strong>
+Identify link- and node-disjoint path pairs (LAND pairs) for each source node.</p></li>
+</ul>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Ensure that the file path is correct and accessible.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">matrixName</span></code> is mandatory for <code class="docutils literal notranslate"><span class="pre">.mat</span></code> files.</p></li>
+<li><p>The adjacency matrix is stored in <strong>upper-triangular form</strong> to avoid duplicate edges.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Network</span></code> is the <strong>foundation for the planning and simulation modules</strong>,
+so it should be instantiated and populated before using any planning methods.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="quickstart.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Quick Start</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="band.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Band Module</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-overview">Module Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-classes">Key Classes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.graph"><code class="docutils literal notranslate"><span class="pre">Network.graph</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.hierarchical_levels"><code class="docutils literal notranslate"><span class="pre">Network.hierarchical_levels</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.topology_name"><code class="docutils literal notranslate"><span class="pre">Network.topology_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.__init__"><code class="docutils literal notranslate"><span class="pre">Network.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.load_topology"><code class="docutils literal notranslate"><span class="pre">Network.load_topology()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.define_hierarchy"><code class="docutils literal notranslate"><span class="pre">Network.define_hierarchy()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.compute_hierarchy_subgraph"><code class="docutils literal notranslate"><span class="pre">Network.compute_hierarchy_subgraph()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.get_neighbor_nodes"><code class="docutils literal notranslate"><span class="pre">Network.get_neighbor_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.compute_k_shortest_paths"><code class="docutils literal notranslate"><span class="pre">Network.compute_k_shortest_paths()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.get_node_degrees"><code class="docutils literal notranslate"><span class="pre">Network.get_node_degrees()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.land_pair_finder"><code class="docutils literal notranslate"><span class="pre">Network.land_pair_finder()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sixdman.core.network.Network.calc_num_pair"><code class="docutils literal notranslate"><span class="pre">Network.calc_num_pair()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-methods">Key Methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notes">Notes</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Matin Rafiei Forooshani
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, Matin Rafiei Forooshani.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

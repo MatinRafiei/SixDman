@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union, Tuple
+from typing import List, Tuple
 import numpy as np
 import pandas as pd
 from dataclasses import dataclass
@@ -10,7 +10,7 @@ import os
 @dataclass
 class PlanningTool:
     """
-    Main class for 6D-MAN (6-Dimensional Metro-Area Network) planning and optimization.
+    Main class for SixDman (6-Dimensional Metro-Area Network) planning and optimization.
     
     This tool integrates physical layer modeling with hierarchical network topology
     and supports multi-band optical transmission planning. It is intended for
@@ -40,165 +40,22 @@ class PlanningTool:
                 Each Band includes start/end frequencies and physical layer parameters.
             period_time (int, optional): Time granularity (e.g., 10 units) for periodic
                 traffic updates or recalculation windows. Default is 10.
+
+        Example:
+        -------
+        >>> from sixdman.core.planning import PlanningTool
+        
+        >>> # Initialize planning tool
+        >>> planner = PlanningTool(
+        ...     network_instance = net, # the network instance
+        ...     bands = [c_band], # list of all band instances
+        ...     period_time = 10 # the time period for planning (e.g., 10 years)
+        ... )
+
         """
         self.network = network_instance
         self.bands = bands
         self.period_time = period_time
-        
-    def generate_initial_traffic_profile(self,
-                                 num_nodes: int,
-                                 monteCarlo_steps: int,
-                                 min_rate: float,
-                                 max_rate: float,
-                                 seed: int, 
-                                 result_directory) -> np.ndarray:
-        """
-        Simulate initial traffic demands for each node using Monte Carlo sampling.
-
-        This function estimates the initial traffic capacity (e.g., demand or throughput potential) 
-        at each node in the network by generating uniformly distributed random values 
-        over several Monte Carlo steps. If results exist, they are loaded from file.
-
-        Args:
-            num_nodes (int): Number of nodes to simulate traffic for.
-            monteCarlo_steps (int): Number of Monte Carlo iterations to average over.
-            min_rate (float): Minimum traffic rate per node.
-            max_rate (float): Maximum traffic rate per node.
-            seed (int): Random seed to ensure repeatable simulations.
-            result_directory (Path): Directory where simulation results are stored or loaded from.
-
-        Returns:
-            np.ndarray: Array of estimated traffic capacities per node (averaged over simulations).
-        """
-
-        # Define the filename for storing/loading precomputed capacity results
-        file_path = result_directory / f"{self.network.topology_name}_HL_capacity_final.npz"
-
-        # Load precomputed capacities if they exist
-        if os.path.exists(file_path):
-            print("Loading precomputed HL_capacity_final ...")
-            data = np.load(file_path)
-            self.HL_capacity_final = data['HL_capacity_final']
-
-        else:
-            print("Calculate HL_capacity_final ...")
-
-            # Storage for traffic capacity samples across Monte Carlo runs
-            random_capacity_storage = []
-
-            for i in range(monteCarlo_steps):
-                # Set seed each iteration (to ensure consistent output if seed is constant)
-                np.random.seed(seed + i)
-
-                # Generate uniform random capacity for each node
-                random_capacity_local = np.random.uniform(min_rate, max_rate, size=num_nodes)
-
-                # Store this realization
-                random_capacity_storage.append(random_capacity_local)
-            
-            # Convert the random_capacity_storage list to numpy array
-            random_capacity_storage = np.array(random_capacity_storage)
-
-            # Average traffic capacities across all Monte Carlo simulations
-            self.HL_capacity_final = random_capacity_storage.mean(axis=0)
-
-            # Save computed capacity to disk
-            np.savez_compressed(file_path, HL_capacity_final=self.HL_capacity_final)
-
-    def simulate_traffic_annual(self,
-                                 lowest_hierarchy_dict: dict,
-                                 CAGR: int, 
-                                 result_directory) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        """
-        Simulate traffic evolution over multiple years for the lowest hierarchy level nodes.
-
-        This method applies a compound annual growth rate (CAGR) to simulate traffic demands
-        on standalone and colocated HL4 nodes. It either loads precomputed values or performs 
-        the full calculation. It also estimates the number of required 100G licenses and residual
-        capacities per node per year.
-
-        Args:
-            lowest_hierarchy_dict (dict): Dictionary containing 'standalone' and 'colocated' node IDs at HL4.
-            CAGR (int): Compound Annual Growth Rate (e.g., 0.4 for 40% annual increase).
-            result_directory (Path): Directory path for reading/writing the traffic matrix.
-
-        Returns:
-            Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-                - Annual added traffic (standalone HL4 nodes)
-                - Annual added traffic (colocated HL4 nodes)
-                - Annual traffic matrix (standalone HL4 nodes)
-                - Annual traffic matrix (colocated HL4 nodes)
-        """
-        
-        # Get node counts
-        num_node_standalone = len(lowest_hierarchy_dict['standalone'])
-        num_node_colocated = len(lowest_hierarchy_dict['colocated'])
-        num_node_total = num_node_standalone + num_node_colocated
-        period_time = self.period_time
-
-        # Path for cached results
-        file_path = result_directory / f"{self.network.topology_name}_traffic_matrix.npz"
-
-        if os.path.exists(file_path):
-            # Load precomputed traffic data
-            print("Loading precomputed Traffic Matrix ...")
-            data = np.load(file_path)
-            added_traffic_annual = data['added_traffic_annual']
-
-            # Initialize first year's 100G license count
-            self.num_100G_licence_annual[0, :] = np.ceil(self.HL_capacity_final / 100)
-
-            # Split added traffic into standalone and colocated components
-            self.lowest_HL_added_traffic_annual_standalone = added_traffic_annual[:, num_node_colocated:]
-            self.lowest_HL_added_traffic_annual_colocated = added_traffic_annual[:, 0:num_node_colocated]
-
-        else:
-            print("Calculate Traffic Matrix ...")
-
-            # Preallocate data structures for annual metrics
-            lowest_HL_traffic_storage_annual = np.empty((period_time, num_node_total))
-            total_traffic_annual = np.empty(period_time)
-            added_traffic_annual = np.empty((period_time, num_node_total))
-            residual_capacity_annual = np.empty((period_time, num_node_total))
-
-            # Initialize first year with current capacity
-            lowest_HL_traffic_storage_annual[0, :] = self.HL_capacity_final
-            total_traffic_annual[0] = np.sum(self.HL_capacity_final)
-            added_traffic_annual[0, :] = self.HL_capacity_final
-
-            # Estimate number of 100G licenses for year 0
-            self.num_100G_licence_annual[0, :] = np.ceil(self.HL_capacity_final / 100)
-            residual_capacity_annual[0, :] = 100 * self.num_100G_licence_annual[0, :] - self.HL_capacity_final
-
-            # Iterate over years and apply CAGR growth
-            for year in range(1, period_time):
-                # Apply CAGR to simulate traffic growth
-                lowest_HL_traffic_storage_annual[year, :] = (
-                    (1 + CAGR) * lowest_HL_traffic_storage_annual[year - 1, :]
-                )
-
-                # Compute total network traffic for the year
-                total_traffic_annual[year] = np.sum(lowest_HL_traffic_storage_annual[year, :])
-
-                # Compute incremental traffic compared to previous year
-                added_traffic_annual[year, :] = (
-                    lowest_HL_traffic_storage_annual[year, :] - lowest_HL_traffic_storage_annual[year - 1, :]
-                )
-
-                # Update number of 100G licenses needed
-                self.num_100G_licence_annual[year, :] = np.ceil(lowest_HL_traffic_storage_annual[year, :] / 100)
-
-                # Calculate residual capacity per node after license allocation
-                residual_capacity_annual[year, :] = (
-                    100 * self.num_100G_licence_annual[year, :] - lowest_HL_traffic_storage_annual[year, :]
-                )
-
-            # Final separation of standalone and colocated traffic data
-            self.lowest_HL_added_traffic_annual_standalone = added_traffic_annual[:, num_node_colocated:]
-            self.lowest_HL_added_traffic_annual_colocated = added_traffic_annual[:, 0:num_node_colocated]
-
-            # Persist computed data to file
-            np.savez_compressed(file_path, added_traffic_annual = added_traffic_annual)             
     
     def initialize_planner(self, 
                            num_fslots: int,
@@ -223,6 +80,14 @@ class PlanningTool:
             SR (float): Symbol rate in baud (default: 40 Gbaud).
             BVT_type (int): Identifier for BVT type (default: 1).
             Max_bit_rate_BVT (np.ndarray): Array of supported BVT bitrates in Gbps.
+
+        Example:
+        -------
+        >>> planner.initialize_planner(
+        ...     num_fslots = num_fslots, # number of frequency slots
+        ...     hierarchy_level = 4, # current hierarchy level
+        ...     minimum_hierarchy_level = 4 # minimum hierarchy levels
+        ... )
         """
 
         self.Max_bit_rate_BVT = Max_bit_rate_BVT
@@ -315,9 +180,185 @@ class PlanningTool:
         self.primary_path_storage = -1 * np.ones(
             shape=(self.network.adjacency_matrix.shape[0]), dtype=int
         )
+        
+    def generate_initial_traffic_profile(self,
+                                 num_nodes: int,
+                                 monteCarlo_steps: int,
+                                 min_rate: float,
+                                 max_rate: float,
+                                 seed: int, 
+                                 result_directory) -> np.ndarray:
+        """
+        Simulate initial traffic demands for each node using Monte Carlo sampling.
 
+        This function estimates the initial traffic capacity (e.g., demand or throughput potential) 
+        at each node in the network by generating uniformly distributed random values 
+        over several Monte Carlo steps. If results exist, they are loaded from file.
 
-    def spectrum_assignment(self,
+        Args:
+            num_nodes (int): Number of nodes to simulate traffic for.
+            monteCarlo_steps (int): Number of Monte Carlo iterations to average over.
+            min_rate (float): Minimum traffic rate per node.
+            max_rate (float): Maximum traffic rate per node.
+            seed (int): Random seed to ensure repeatable simulations.
+            result_directory (Path): Directory where simulation results are stored or loaded from.
+
+        Returns:
+            np.ndarray: Array of estimated traffic capacities per node (averaged over simulations).
+
+        Example:
+        -------
+        >>> # generate port capacity for HL4 nodes uisng Monte Carlo simulation
+        >>> planner.generate_initial_traffic_profile(
+        ...     num_nodes = len(HL4_all), # all the nodes of minimum hierarchy level
+        ...     monteCarlo_steps = 100, # Number of Monte Carlo iterations
+        ...     min_rate = 20, # minimum allowed traffic rate per node in Gbps
+        ...     max_rate = 200, # maximum allowed traffic rate per node in Gbps
+        ...     seed = 20, # random seed for reproducibility
+        ...     result_directory = results_dir # Path to the directory where results are stored
+        ... )
+
+        """
+
+        # Define the filename for storing/loading precomputed capacity results
+        file_path = result_directory / f"{self.network.topology_name}_HL_capacity_final.npz"
+
+        # Load precomputed capacities if they exist
+        if os.path.exists(file_path):
+            print("Loading precomputed HL_capacity_final ...")
+            data = np.load(file_path)
+            self.HL_capacity_final = data['HL_capacity_final']
+
+        else:
+            print("Calculate HL_capacity_final ...")
+
+            # Storage for traffic capacity samples across Monte Carlo runs
+            random_capacity_storage = []
+
+            for i in range(monteCarlo_steps):
+                # Set seed each iteration (to ensure consistent output if seed is constant)
+                np.random.seed(seed + i)
+
+                # Generate uniform random capacity for each node
+                random_capacity_local = np.random.uniform(min_rate, max_rate, size=num_nodes)
+
+                # Store this realization
+                random_capacity_storage.append(random_capacity_local)
+            
+            # Convert the random_capacity_storage list to numpy array
+            random_capacity_storage = np.array(random_capacity_storage)
+
+            # Average traffic capacities across all Monte Carlo simulations
+            self.HL_capacity_final = random_capacity_storage.mean(axis=0)
+
+            # Save computed capacity to disk
+            np.savez_compressed(file_path, HL_capacity_final=self.HL_capacity_final)
+
+    def simulate_traffic_annual(self,
+                                 lowest_hierarchy_dict: dict,
+                                 CAGR: int, 
+                                 result_directory) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Simulate traffic evolution over multiple years for the lowest hierarchy level nodes.
+
+        This method applies a compound annual growth rate (CAGR) to simulate traffic demands
+        on standalone and colocated HL4 nodes. It either loads precomputed values or performs 
+        the full calculation. It also estimates the number of required 100G licenses and residual
+        capacities per node per year.
+
+        Args:
+            lowest_hierarchy_dict (dict): Dictionary containing 'standalone' and 'colocated' node IDs at HL4.
+            CAGR (int): Compound Annual Growth Rate (e.g., 0.4 for 40% annual increase).
+            result_directory (Path): Directory path for reading/writing the traffic matrix.
+
+        Returns:
+            Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+                - Annual added traffic (standalone HL4 nodes)
+                - Annual added traffic (colocated HL4 nodes)
+                - Annual traffic matrix (standalone HL4 nodes)
+                - Annual traffic matrix (colocated HL4 nodes)
+
+        Example:
+        ---------
+        >>> # Traffic growth simulation over 10 years
+        >>> planner.simulate_traffic_annual(
+        ...     lowest_hierarchy_dict = hl_dict['HL4'], # Dictionary with minimum hierarchy level standalone and colocated nodes
+        ...     CAGR = 0.4, # 40% annual growth rate
+        ...     result_directory = results_dir # Path to the directory where results are stored
+        ...)
+        """
+        
+        # Get node counts
+        num_node_standalone = len(lowest_hierarchy_dict['standalone'])
+        num_node_colocated = len(lowest_hierarchy_dict['colocated'])
+        num_node_total = num_node_standalone + num_node_colocated
+        period_time = self.period_time
+
+        # Path for cached results
+        file_path = result_directory / f"{self.network.topology_name}_traffic_matrix.npz"
+
+        if os.path.exists(file_path):
+            # Load precomputed traffic data
+            print("Loading precomputed Traffic Matrix ...")
+            data = np.load(file_path)
+            added_traffic_annual = data['added_traffic_annual']
+
+            # Initialize first year's 100G license count
+            self.num_100G_licence_annual[0, :] = np.ceil(self.HL_capacity_final / 100)
+
+            # Split added traffic into standalone and colocated components
+            self.lowest_HL_added_traffic_annual_standalone = added_traffic_annual[:, num_node_colocated:]
+            self.lowest_HL_added_traffic_annual_colocated = added_traffic_annual[:, 0:num_node_colocated]
+
+        else:
+            print("Calculate Traffic Matrix ...")
+
+            # Preallocate data structures for annual metrics
+            lowest_HL_traffic_storage_annual = np.empty((period_time, num_node_total))
+            total_traffic_annual = np.empty(period_time)
+            added_traffic_annual = np.empty((period_time, num_node_total))
+            residual_capacity_annual = np.empty((period_time, num_node_total))
+
+            # Initialize first year with current capacity
+            lowest_HL_traffic_storage_annual[0, :] = self.HL_capacity_final
+            total_traffic_annual[0] = np.sum(self.HL_capacity_final)
+            added_traffic_annual[0, :] = self.HL_capacity_final
+
+            # Estimate number of 100G licenses for year 0
+            self.num_100G_licence_annual[0, :] = np.ceil(self.HL_capacity_final / 100)
+            residual_capacity_annual[0, :] = 100 * self.num_100G_licence_annual[0, :] - self.HL_capacity_final
+
+            # Iterate over years and apply CAGR growth
+            for year in range(1, period_time):
+                # Apply CAGR to simulate traffic growth
+                lowest_HL_traffic_storage_annual[year, :] = (
+                    (1 + CAGR) * lowest_HL_traffic_storage_annual[year - 1, :]
+                )
+
+                # Compute total network traffic for the year
+                total_traffic_annual[year] = np.sum(lowest_HL_traffic_storage_annual[year, :])
+
+                # Compute incremental traffic compared to previous year
+                added_traffic_annual[year, :] = (
+                    lowest_HL_traffic_storage_annual[year, :] - lowest_HL_traffic_storage_annual[year - 1, :]
+                )
+
+                # Update number of 100G licenses needed
+                self.num_100G_licence_annual[year, :] = np.ceil(lowest_HL_traffic_storage_annual[year, :] / 100)
+
+                # Calculate residual capacity per node after license allocation
+                residual_capacity_annual[year, :] = (
+                    100 * self.num_100G_licence_annual[year, :] - lowest_HL_traffic_storage_annual[year, :]
+                )
+
+            # Final separation of standalone and colocated traffic data
+            self.lowest_HL_added_traffic_annual_standalone = added_traffic_annual[:, num_node_colocated:]
+            self.lowest_HL_added_traffic_annual_colocated = added_traffic_annual[:, 0:num_node_colocated]
+
+            # Persist computed data to file
+            np.savez_compressed(file_path, added_traffic_annual = added_traffic_annual)             
+
+    def _spectrum_assignment(self,
                             path_IDx: int,
                             path_type: str,
                             kpair_counter,
@@ -587,7 +628,7 @@ class PlanningTool:
 
             return self.Year_FP_HL_colocated
 
-    def update_hl_node_degrees(self, 
+    def _update_hl_node_degrees(self, 
                             hierarchy_level: dict,
                             Year_FP: np.ndarray) -> np.ndarray:
         """
@@ -639,7 +680,7 @@ class PlanningTool:
  
         self.degree_number_HLs = degree_number_HLs  # Save result for further use
 
-    def calculate_BVT_usage(self) -> dict:
+    def _calculate_BVT_usage(self) -> dict:
         """
         Calculate cumulative BVT (Bandwidth Variable Transceiver) counts and 100G licenses for each year.
 
@@ -689,7 +730,7 @@ class PlanningTool:
         self.HL_BVTNum_All = HL_BVTNum_All
 
 
-    def save_network_results(self,
+    def _save_network_results(self,
                          hierarchy_level: int,
                          minimum_hierarchy_level: int,
                          result_directory):
@@ -788,6 +829,21 @@ class PlanningTool:
 
         Returns:
             float: Total cost of the generated network design for the current
+
+        Example:
+        --------
+        >>> planner.run_planner(hierarchy_level = 4, # Current hierarchy level
+        ...         prev_hierarchy_level = 3, # Previous hierarchy level
+        ...         pairs_disjoint = pairs_disjoint, # DataFrame of disjoint LAND pairs
+        ...         kpair_standalone = 1, # Maximum Number of K-shortest paths for standalone HL nodes
+        ...         kpair_colocated = 1, # Maximum Number of K-shortest paths for colocated HL nodes
+        ...         candidate_paths_standalone_df = K_path_attributes_df, # DataFrame of candidate paths for standalone HL nodes
+        ...         candidate_paths_colocated_df = K_path_attributes_colocated_df, # DataFrame of candidate paths for colocated HL nodes
+        ...         GSNR_opt_link = GSNR_opt_link, # GSNR values for each link in this hierarchy level
+        ...         minimum_level = 4, # Minimum hierarchy level
+        ...         node_cap_update_idx = 2, # Index of node capacity vector to update
+        ...         result_directory = results_dir # Directory to save results
+        ... ) 
         """
         HL_standalone = self.network.hierarchical_levels[f"HL{hierarchy_level}"]['standalone']
         HL_colocated = self.network.hierarchical_levels[f"HL{hierarchy_level}"]['colocated']
@@ -926,7 +982,7 @@ class PlanningTool:
 
                         # Spectrum assignment of primary path
                         primary_path_IDX = int(candidate_path_pair.iloc[final_K_pair_counter]['primary_path_IDx'])
-                        primary_info_dict, LSP_array_pair, Year_FP_pair = self.spectrum_assignment(path_IDx = primary_path_IDX,
+                        primary_info_dict, LSP_array_pair, Year_FP_pair = self._spectrum_assignment(path_IDx = primary_path_IDX,
                                                                                                    path_type = 'primary',
                                                                                                    kpair_counter = final_K_pair_counter,
                                                                                                    year = year, 
@@ -940,7 +996,7 @@ class PlanningTool:
                         
                         # Spectrum assignment of secondary path
                         secondary_path_IDX = int(candidate_path_pair.iloc[final_K_pair_counter]['secondary_path_IDx'])
-                        secondary_info_dict, LSP_array_pair, Year_FP_pair = self.spectrum_assignment(path_IDx = secondary_path_IDX,
+                        secondary_info_dict, LSP_array_pair, Year_FP_pair = self._spectrum_assignment(path_IDx = secondary_path_IDX,
                                                                                                      path_type = 'secondary',
                                                                                                      kpair_counter = final_K_pair_counter,
                                                                                                      year = year, 
@@ -1117,7 +1173,7 @@ class PlanningTool:
                     ##############################################################
 
                     # Spectrum assignment for primary path
-                    Year_FP_HL_colocated = self.spectrum_assignment(path_IDx = None,
+                    Year_FP_HL_colocated = self._spectrum_assignment(path_IDx = None,
                                                                     path_type = None,
                                                                     kpair_counter = None,
                                                                     year = year, 
@@ -1160,7 +1216,7 @@ class PlanningTool:
 
                         # Spectrum assignment for secondary path
                         secondary_path_IDX = candidate_paths_colocated_df[candidate_paths_colocated_df['src_node'] == HL_colocated[node_idx]].head(1).index[0]
-                        secondary_info_dict, LSP_array_pair, Year_FP_pair = self.spectrum_assignment(path_IDx = secondary_path_IDX,
+                        secondary_info_dict, LSP_array_pair, Year_FP_pair = self._spectrum_assignment(path_IDx = secondary_path_IDX,
                                                                                                      path_type = 'secondary',
                                                                                                      kpair_counter = final_K_pair_counter,
                                                                                                      year = year, 
@@ -1382,14 +1438,14 @@ class PlanningTool:
             self.GSNR_HL4_10Year.append(np.array(GSNR_BVT_per_year) - reduce_GSNR_year)
 
         # Updating Node degress based on frequency plan
-        self.update_hl_node_degrees(hierarchy_level = hierarchy_level,
+        self._update_hl_node_degrees(hierarchy_level = hierarchy_level,
                                     Year_FP = self.Year_FP)
         
         # BVT license count tracking over the simulation period
-        self.calculate_BVT_usage()
+        self._calculate_BVT_usage()
         
         # save all simulation results
-        self.save_network_results(hierarchy_level = hierarchy_level, 
+        self._save_network_results(hierarchy_level = hierarchy_level, 
                         minimum_hierarchy_level = minimum_level, 
                         result_directory = result_directory)
 

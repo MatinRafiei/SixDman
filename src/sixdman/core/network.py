@@ -12,12 +12,12 @@ class Network:
     """A class representing an optical network topology and its properties.
     
     This class handles the network topology, hierarchical levels, and path computation
-    for the 6D-MAN planning tool.
+    for the SixDman planning tool.
 
     Attributes:
-        graph (nx.Graph): NetworkX graph representing the network topology.
+        graph (nx.Graph): NetworkX graph representing the network topology graph.
         hierarchical_levels (Dict[str, Dict[str, List[str]]]): 
-            Dictionary containing nodes organized by hierarchical level and colocation type.
+            Dictionary containing nodes organized by hierarchical level.
         topology_name (str): Name of the network topology.
     """
 
@@ -27,6 +27,11 @@ class Network:
         
         Args:
             topology_name (str): Name of the network topology.
+
+        Example
+        --------
+        >>> from sixdman.core.network import Network
+        >>> net = Network("ExampleNetwork")
         """
         self.graph = nx.Graph()
         self.hierarchical_levels: Dict[str, Dict[str, List[str]]] = {
@@ -53,7 +58,7 @@ class Network:
 
         Args:
             filepath (str): Path to the file containing network topology.
-            matrixName (str, optional): Name of the adjacency matrix variable in .mat or .npz files.
+            matrixName (str): Name of the adjacency matrix variable in .mat or .npz files.
 
         Returns:
             nx.Graph: A NetworkX graph representing the loaded network topology.
@@ -63,6 +68,10 @@ class Network:
             ValueError: If the adjacency matrix is empty or invalid.
             KeyError: If the specified matrixName does not exist in the file.
             IOError: If there is an error loading the file or parsing the matrix.
+
+        Example
+        --------
+        >>> net.load_topology("path/to/topology.mat", matrixName="adjacency_matrix")
         """
         if not os.path.exists(filepath):
             raise FileNotFoundError(f"Topology file not found: {filepath}")
@@ -134,23 +143,27 @@ class Network:
             - Accepts keyword arguments like HL1_standalone, HL2_colocated, etc.
             - `standalone` nodes are unique to that level.
             - `colocated` nodes are shared with previous levels if not explicitly given.
-            - If a `_colocated` list is not provided, it is **auto-accumulated**
-            from all previous standalone nodes.
-
-        Example:
-            ```python
-            network.set_hierarchical_levels(
-                HL1_standalone=["A", "B"],
-                HL2_standalone=["C"],
-                HL2_colocated=["A", "C"]
-            )
-            ```
-
+            - If a `_colocated` list is not provided, it is **auto-accumulated** from all previous standalone nodes.
+                
         Args:
             **kwargs: Variable keyword arguments for HLx_standalone and HLx_colocated.
 
         Returns:
             Dict[str, Dict[str, List[str]]]: Updated hierarchical levels structure.
+
+        
+        Examples
+        --------
+        >>> HL_dict = net.define_hierarchy(
+        ...     HL3_standalone = [1, 2, 3],
+        ...     HL4_standalone = [4, 5, 6, 7],
+        ...     HL4_colocated = [1]
+        ... )
+
+        >>> HL4_Standalone = hl_dict['HL4']['standalone']
+        >>> HL4_colocated = hl_dict['HL4']['colocated']
+        >>> HL4_all = np.concatenate((HL4_Standalone, HL4_colocated))
+        
         """
         self.hierarchical_levels = {}
         colocated_accum = []  # Keeps track of all standalone nodes for auto-colocation
@@ -216,7 +229,7 @@ class Network:
         return path[::-1]  # Reverse to get path from source → target
 
     
-    def get_link_indices_in_path(self, 
+    def _get_link_indices_in_path(self, 
                                  path: List[int]) -> List[int]:
         """Return the list of link indices that correspond to the given path.
         
@@ -252,84 +265,6 @@ class Network:
 
         return link_indices
     
-    def compute_k_shortest_paths(self, 
-                                 subnet_matrix: np.ndarray,
-                                 paths: List[Dict],
-                                 source: int,
-                                 target: int,
-                                 k: int = 20) -> List[Dict]:
-        """Compute k-shortest paths between source and target nodes using Yen's algorithm.
-        
-        This function computes candidate paths for optical network planning, 
-        calculates distances, and updates the `paths` list with detailed path information.
-
-        Args:
-            subnet_matrix (np.ndarray): Adjacency matrix of the subnet.
-            paths (List[Dict]): List to append path dictionaries to (can be empty initially).
-            source (int): Source node ID.
-            target (int): Target node ID.
-            k (int, optional): Number of paths to compute (default: 20).
-
-        Returns:
-            List[Dict]: Updated list of paths, where each dictionary contains:
-                - src_node (int): Source node
-                - dest_node (int): Destination node
-                - nodes (List[int]): Sequence of nodes in the path
-                - links (List[int]): Link indices forming the path
-                - distance (float): Total path distance
-                - num_hops (int): Number of hops in the path
-        """
-        # Convert adjacency matrix to sparse format for efficiency
-        graph_sparse = csr_matrix(subnet_matrix)
-        
-        # Compute k-shortest paths using Yen's algorithm
-        distances, predecessors = yen(
-            csgraph=graph_sparse,
-            source=source,
-            sink=target,
-            K=k,
-            directed=False,
-            return_predecessors=True
-        )
-
-        for i, distance in enumerate(distances):
-            if distance == np.inf:
-                continue  # Skip unreachable paths
-
-            # Reconstruct path using the updated helper function
-            path = self._reconstruct_yen_path(predecessors, i, source, target)
-            if not path:
-                continue
-
-            # Get link indices for this path
-            links = self.get_link_indices_in_path(path)
-
-            # Append structured path information
-            paths.append({
-                "src_node": int(source),
-                "dest_node": int(target),
-                "nodes": list(map(int, path)),
-                "links": list(map(int, links)),
-                "distance": float(distance),
-                "num_hops": len(path) - 1
-            })
-
-        return paths
-    
-    def get_node_degrees(self, 
-                         nodes: List[int]) -> Dict[int, int]:
-        """Get the degree of specified nodes in the graph.
-
-        This method returns a dictionary where each key is a node ID, and each value
-        is the degree of the corresponding node (the number of edges connected to it).
-
-        Args:
-            nodes (List[int]): List of node IDs for which to retrieve the degree.
-
-        Returns:
-            Dict[int, int]: Dictionary mapping node IDs to their degree (the number of edges).
-        """
-        return np.array(self.graph.degree(nodes))
     def compute_hierarchy_subgraph(self,
                                    hierarchy_level: int,
                                    minimum_hierarchy_level: int) -> Tuple[nx.Graph, np.ndarray]:
@@ -347,7 +282,15 @@ class Network:
             Tuple[nx.Graph, np.ndarray]: 
                 - The resulting NetworkX subgraph.
                 - The subgraph's adjacency (cost) matrix with np.inf for missing links.
+
+        Example
+        --------    
+        >>> subgraph, subnetMatrix = net.compute_hierarchy_subgraph(
+        ...     hierarchy_level = 4, # Current hierarchy level
+        ...     minimum_hierarchy_level = 4 # Minimum hierarchy level to include in analysis
+        ... )
         """
+
         # Extract nodes for the specified hierarchy level
         try:
             current_nodes = self.hierarchical_levels[f"HL{hierarchy_level}"]['standalone']
@@ -394,7 +337,12 @@ class Network:
 
         Returns:
             List[int]: Sorted list of unique neighbor node IDs.
+
+        Example
+        --------    
+        >>> neighbors_HL4 = net.get_neighbor_nodes(HL4_standalone)
         """
+
         # define set to avoid duplicates
         connected_nodes = set() 
         for node in nodes:
@@ -404,8 +352,107 @@ class Network:
         connected_nodes -= set(nodes)
 
         return connected_nodes
-
     
+    def compute_k_shortest_paths(self, 
+                                 subnet_matrix: np.ndarray,
+                                 paths: List[Dict],
+                                 source: int,
+                                 target: int,
+                                 k: int = 20) -> List[Dict]:
+        """Compute k-shortest paths between source and target nodes using Yen's algorithm.
+        
+        This function computes candidate paths for optical network planning, 
+        calculates distances, and updates the `paths` list with detailed path information.
+
+        Args:
+            subnet_matrix (np.ndarray): Adjacency matrix of the subnet.
+            paths (List[Dict]): List to append path dictionaries to (can be empty initially).
+            source (int): Source node ID.
+            target (int): Target node ID.
+            k (int, optional): Number of paths to compute (default: 20).
+
+        Returns:
+            List[Dict]: Updated list of paths, where each dictionary contains:
+                - src_node (int): Source node
+                - dest_node (int): Destination node
+                - nodes (List[int]): Sequence of nodes in the path
+                - links (List[int]): Link indices forming the path
+                - distance (float): Total path distance
+                - num_hops (int): Number of hops in the path
+
+        Example
+        -------
+        >>> src_nodes = HL4_standalone
+        >>> target_nodes = neighbors_HL4
+        >>> k_paths = 20
+
+        >>> # Define a list to store path attributes
+        >>> K_path_attributes = []
+        >>> # Iterate through each standalone HL4 node
+        >>> for src in src_nodes:
+        ...     for dest in target_nodes:
+        ...         K_path_attributes = net.compute_k_shortest_paths(
+        ...             subnetMatrix,
+        ...             K_path_attributes,
+        ...             source = src,
+        ...             target = dest,
+        ...             k = k_paths
+        ...         )
+        >>> # Convert to dataframe
+        >>> K_path_attributes_df = pd.DataFrame(K_path_attributes)
+        """
+        # Convert adjacency matrix to sparse format for efficiency
+        graph_sparse = csr_matrix(subnet_matrix)
+        
+        # Compute k-shortest paths using Yen's algorithm
+        distances, predecessors = yen(
+            csgraph=graph_sparse,
+            source=source,
+            sink=target,
+            K=k,
+            directed=False,
+            return_predecessors=True
+        )
+
+        for i, distance in enumerate(distances):
+            if distance == np.inf:
+                continue  # Skip unreachable paths
+
+            # Reconstruct path using the updated helper function
+            path = self._reconstruct_yen_path(predecessors, i, source, target)
+            if not path:
+                continue
+
+            # Get link indices for this path
+            links = self._get_link_indices_in_path(path)
+
+            # Append structured path information
+            paths.append({
+                "src_node": int(source),
+                "dest_node": int(target),
+                "nodes": list(map(int, path)),
+                "links": list(map(int, links)),
+                "distance": float(distance),
+                "num_hops": len(path) - 1
+            })
+
+        return paths
+    
+    def get_node_degrees(self, 
+                         nodes: List[int]) -> Dict[int, int]:
+        """Get the degree of specified nodes in the graph.
+
+        This method returns a dictionary where each key is a node ID, and each value
+        is the degree of the corresponding node (the number of edges connected to it).
+
+        Args:
+            nodes (List[int]): List of node IDs for which to retrieve the degree.
+
+        Returns:
+            Dict[int, int]: Dictionary mapping node IDs to their degree (the number of edges).
+        """
+        return np.array(self.graph.degree(nodes))
+            
     def land_pair_finder(self,
                          src_list: List[int],
                          candidate_paths_sorted: pd.DataFrame,
@@ -428,6 +475,22 @@ class Network:
             pd.DataFrame: DataFrame with columns:
                 ['primary_path_IDx', 'secondary_path_IDx', 'numHops_secondary',
                 'distance_secondary', 'src_node']
+
+        Example
+        --------
+        >>> # Sort the candidate paths by number of hops and distance
+        >>> K_path_attributes_df_sorted = K_path_attributes_df.groupby(
+        ...     ['src_node'], group_keys = False).apply(
+        ...         lambda x: x.sort_values(['num_hops', 'distance'])
+        ...     )
+        
+        >>> # Find 1 disjoint pairs for each source node
+        >>> pairs_disjoint = net.land_pair_finder(
+        ...     src_nodes, 
+        ...     K_path_attributes_df_sorted, 
+        ...     num_pairs = 1
+        ... )
+
         """
         results = []
 
