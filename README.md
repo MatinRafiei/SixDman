@@ -37,37 +37,68 @@ sixdman/
 
 ## 🚀 Installation
 
-Clone the repository:
+1️⃣ Direct GitHub Installation (Non-editable)
 
-```bash
-git clone https://github.com/matinrafiei/sixdman.git
-cd sixdman
-```
-Option 1: Using Python venv (Recommended for lightweight setup)
+  - Option 1: Using Python venv (Recommended for lightweight setup)  
+  
+    ```bash
+    # Create virtual environment
+    python -m venv .venv
+    
+    # Activate it
+    source .venv/bin/activate    # Linux/Mac
+    .venv\Scripts\activate       # Windows
+    
+    # Install the package
+    pip install git+https://github.com/MatinRafiei/6D-MAN.git
+    ```
+- Option 2: Using Conda (Recommended for data science users)  
 
-```bash
-# Create virtual environment
-python -m venv .venv
+  ```bash
+  # Create a conda environment with Python 3.9+
+  conda create -n sixdman-env python=3.9 -y
+  
+  # Activate environment
+  conda activate sixdman-env
+  
+  # Install the package
+  pip install git+https://github.com/MatinRafiei/6D-MAN.git
+  ```
+2️⃣ Editable Install (Development Mode)
 
-# Activate it
-source .venv/bin/activate    # Linux/Mac
-.venv\Scripts\activate       # Windows
+  Clone the repository:
+  
+  ```bash
+  git clone https://github.com/matinrafiei/sixdman.git
+  cd sixdman
+  ```
 
-# Install dependencies
-pip install -r requirements.txt
-```
-Option 2: Using Conda (Recommended for data science users)  
+- Option 1: Using Python venv (Recommended for lightweight setup)
 
-```bash
-# Create a conda environment with Python 3.9+
-conda create -n sixdman python=3.9 -y
+  ```bash
+  # Create virtual environment
+  python -m venv .venv
+  
+  # Activate it
+  source .venv/bin/activate    # Linux/Mac
+  .venv\Scripts\activate       # Windows
+  
+  # Install in editable mode
+  pip install -e .
+  ```
+- Option 2: Using Conda (Recommended for data science users)  
 
-# Activate environment
-conda activate sixdman
+  ```bash
+  # Create a conda environment with Python 3.9+
+  conda create -n sixdman-env python=3.9 -y
+  
+  # Activate environment
+  conda activate sixdman-env
+  
+  # Install in editable mode
+  pip install -e .
+  ```
 
-# Install dependencies
-pip install -r requirements.txt
-```
 
 ## ⚡ Quick Start
 1. Launch basic network planning example:
@@ -80,7 +111,6 @@ pip install -r requirements.txt
    ```bash
     jupyter notebook examples/MAN157_Total_Level_50G.ipynb
    ```
-
 ## 🧪 Running Tests
 Unit tests are located in the tests/ folder.  
 Run all tests using:
