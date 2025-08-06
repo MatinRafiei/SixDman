@@ -35,8 +35,11 @@ extensions = [
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_book_theme'
-# html_static_path = ['_static']
+html_theme = 'press'
+
+# html_permalinks_icon = '§'
+# html_theme = 'insipid'
+
 
 autodoc_member_order = "bysource"
 autodoc_default_options = {
