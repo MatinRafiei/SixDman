@@ -41,11 +41,6 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Data files (optional - remove if you want to track results)
-results/
-*.npz
-*.csv
-*.mat
 
 # Logs
 *.log
