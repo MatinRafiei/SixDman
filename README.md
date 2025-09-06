@@ -139,4 +139,4 @@ Please read the [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## 📧 Contact
 Maintainers: Matin Rafiei Forooshani, Farhad Arpanaei  
-Email: -matinrafiei007@gmail.com, -farhad.arpanaei@uc3m.es
+Email: - matinrafiei007@gmail.com - farhad.arpanaei@uc3m.es
