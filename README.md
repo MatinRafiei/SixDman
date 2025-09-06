@@ -138,5 +138,5 @@ We welcome contributions!
 Please read the [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## 📧 Contact
-Maintainer: Matin Rafiei Forooshani, Farhad Arpanaei
+Maintainer: Matin Rafiei Forooshani, Farhad Arpanaei  
 Email: matinrafiei007@gmail.com, farhad.arpanaei@uc3m.es
