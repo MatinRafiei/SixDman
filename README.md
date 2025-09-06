@@ -61,7 +61,7 @@ It includes:
     .venv\Scripts\activate       # Windows
     
     # Install the package
-    pip install git+https://github.com/MatinRafiei/SixDman.git
+    pip install git+https://github.com/UC3M-ONDT/SixDman.git
     ```
 - Option 2: Using Conda (Recommended for data science users)  
 
@@ -73,14 +73,14 @@ It includes:
   conda activate sixdman-env
   
   # Install the package
-  pip install git+https://github.com/MatinRafiei/SixDman.git
+  pip install git+https://github.com/UC3M-ONDT/SixDman.git
   ```
 2️⃣ Editable Install (Development Mode)
 
   Clone the repository:
   
   ```bash
-  git clone https://github.com/MatinRafiei/SixDman.git
+  git clone https://github.com/UC3M-ONDT/SixDman.git
   cd sixdman
   ```
 
@@ -138,5 +138,5 @@ We welcome contributions!
 Please read the [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## 📧 Contact
-Maintainer: Matin Rafiei Forooshani  
-Email: matinrafiei007@gmail.com
+Maintainer: Matin Rafiei Forooshani, Farhad Arpanaei
+Email: matinrafiei007@gmail.com, farhad.arpanaei@uc3m.es

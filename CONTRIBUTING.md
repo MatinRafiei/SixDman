@@ -78,7 +78,7 @@ There are several ways you can contribute:
 1. Clone the repo and create a virtual environment:
 
    ```bash
-   git clone https://github.com/MatinRafiei/SixDman.git
+   git clone https://github.com/UC3M-ONDT/SixDman.git
    cd sixdman
    python -m venv .venv
    source .venv/bin/activate  # Linux/Mac

@@ -33,7 +33,7 @@ You can install the latest version directly from GitHub:
     .venv\Scripts\activate       # Windows
     
     # Install the package
-    pip install git+https://github.com/MatinRafiei/SixDman.git
+    pip install git+https://github.com/UC3M-ONDT/SixDman.git
 
 - **Option 2: Using Conda (Recommended for data science users)**
 
@@ -46,7 +46,7 @@ You can install the latest version directly from GitHub:
   conda activate sixdman-env
   
   # Install the package
-  pip install git+https://github.com/MatinRafiei/SixDman.git
+  pip install git+https://github.com/UC3M-ONDT/SixDman.git
 
 
 
@@ -63,7 +63,7 @@ If you plan to **modify the code** or **contribute**, use editable mode.
 
 .. code-block:: bash
 
-  git clone https://github.com/MatinRafiei/SixDman.git
+  git clone https://github.com/UC3M-ONDT/SixDman.git
   cd sixdman
 
 **Step 2: Create a virtual environment (Recommended)**
